@@ -3,7 +3,8 @@
 
 # checkgip.py
 
-import os, sys
+import os
+import sys
 import time
 import json
 import requests
@@ -17,8 +18,9 @@ def checkMain():
     メインルーチン
     '''
     global g_settingPath
-    g_settingPath = os.path.abspath(os.path.dirname(__file__)) + '/checkgip.json'
+    g_settingPath = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'checkgip.json')
 
+    # 設定のロード
     loadSettings()
 
     # グローバルIPを求める
