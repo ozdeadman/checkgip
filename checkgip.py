@@ -4,95 +4,103 @@
 # checkgip.py
 
 import os
-import sys
-import time
 import json
-import requests
 import socket
+import requests
 
-g_slackWebhook =  ''
-g_settingPath = ''
+g_slack_webhook = ''
+g_setting_path = ''
+
+__version__ = "0.1.0.171126"
 
 def checkMain():
     '''
-    メインルーチン
+    main routine
     '''
-    global g_settingPath
-    g_settingPath = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'checkgip.json')
+    global g_setting_path
+    g_setting_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'checkgip.json')
 
-    # 設定のロード
+    # load setting from json
     loadSettings()
 
-    # グローバルIPを求める
-    globalIPAddr = getGlobalIPAddr()
+    # get global IP Addr
+    global_ipaddr = getGlobalIPAddr()
+    if (global_ipaddr == ''):
+        print 'Internet Connection error.'
+        return -1
 
-    if (getPrevGlovalIPAddr() == globalIPAddr):
+    if (getPrevGlobalIPAddr() == global_ipaddr):
         print 'IP Addr is not change.'
     else:
-        print 'IP Addr is change. ' + globalIPAddr
-        setPrevGlovalIPAddr(globalIPAddr)
-        sendSlackMsg(globalIPAddr)
+        print 'IP Addr is change. ' + global_ipaddr
+        setPrevGlobalIPAddr(global_ipaddr)
+        sendSlackMsg(global_ipaddr)
 
-def sendSlackMsg(globalIPAddr):
-    '''
-    Slackメッセージ送信
-    '''
-    msg = ''
-    msg = getOSUname() + '\\nglobal IP Addr : ' + globalIPAddr
-
-    payload = json.loads('{"text": "%s"}' % msg)
-    r = requests.post(g_slackWebhook, data=json.dumps(payload))
-    print r.status_code
-    print r.text
-
-def getPrevGlovalIPAddr():
-    ''' 
-    前回 Global IPアドレスを読み込む
-    '''    
-    if (os.path.exists(g_settingPath)):
-        settingFile = open(g_settingPath, 'r') 
-        settingJSON = json.load(settingFile)
-        if('prevAddr' in settingJSON):
-            return settingJSON['prevAddr']
-        else:
-            return ''
-    else:
-        print g_settingPath
-        return ''
+    return 0
 
 def loadSettings():
     ''' 
-    設定データを読み込み
+    load settings from json
     '''
-    global g_slackWebhook
-    settingJSON = {}
-    if (os.path.exists(g_settingPath)):
-        settingFile = open(g_settingPath, 'r') 
-        settingJSON = json.load(settingFile)
-        if('slackWebhook' in settingJSON):
-            g_slackWebhook = settingJSON['slackWebhook']
+    global g_slack_webhook
+    setting_json = {}
+    if (os.path.exists(g_setting_path)):
+        setting_file = open(g_setting_path, 'r') 
+        setting_json = json.load(setting_file)
+        if('slackWebhook' in setting_json):
+            g_slack_webhook = setting_json['slackWebhook']
 
-def setPrevGlovalIPAddr(prevAddr):
-    ''' 
-    前回 Global IPアドレスを書き込む
+def sendSlackMsg(global_ipaddr):
     '''
-    settingJSON = {}
-    settingJSON['slackWebhook'] = g_slackWebhook
-    settingJSON['prevAddr'] = prevAddr
-    with open(g_settingPath, 'w') as settingFile:
-        json.dump(settingJSON, settingFile)
+    send message to Slack
+    '''
+    msg = ''
+    msg = getOSUname() + '\\nglobal IP Addr : ' + global_ipaddr
+
+    payload = json.loads('{"text": "%s"}' % msg)
+    r = requests.post(g_slack_webhook, data=json.dumps(payload))
+    print r.status_code
+    print r.text
+
+def getPrevGlobalIPAddr():
+    ''' 
+    get prre GlobalIPAddr
+    '''    
+    if (os.path.exists(g_setting_path)):
+        setting_file = open(g_setting_path, 'r') 
+        setting_json = json.load(setting_file)
+        if('prevAddr' in setting_json):
+            return setting_json['prevAddr']
+        else:
+            return ''
+    else:
+        print g_setting_path
+        return ''
+
+def setPrevGlobalIPAddr(prevAddr):
+    ''' 
+    set prev gloval IP Addr value on setting file
+    '''
+    setting_json = {}
+    setting_json['slackWebhook'] = g_slack_webhook
+    setting_json['prevAddr'] = prevAddr
+    with open(g_setting_path, 'w') as setting_file:
+        json.dump(setting_json, setting_file)
 
 def getGlobalIPAddr():
     '''
-    グローバル IP を取得する 
+    get global IP Addr
     '''
     url = 'http://ipcheck.ieserver.net/'
-    res = requests.get(url)
+    try:
+        res = requests.get(url)
+    except Exception:
+        return ''
     return str(res.text.rstrip('\n'))
 
 def getOSUname():
     '''
-    Hostname を取得する
+    get OS hostname
     '''
     return '%s' % socket.gethostname()
 
