@@ -11,7 +11,7 @@ import requests
 g_slack_webhook = ''
 g_setting_path = ''
 
-__version__ = "0.1.0.171126"
+__version__ = "0.1.1.171224"
 
 def checkMain():
     '''
@@ -39,13 +39,13 @@ def checkMain():
     return 0
 
 def loadSettings():
-    ''' 
+    '''
     load settings from json
     '''
     global g_slack_webhook
     setting_json = {}
     if (os.path.exists(g_setting_path)):
-        setting_file = open(g_setting_path, 'r') 
+        setting_file = open(g_setting_path, 'r')
         setting_json = json.load(setting_file)
         if('slackWebhook' in setting_json):
             g_slack_webhook = setting_json['slackWebhook']
@@ -63,22 +63,21 @@ def sendSlackMsg(global_ipaddr):
     print r.text
 
 def getPrevGlobalIPAddr():
-    ''' 
+    '''
     get prre GlobalIPAddr
-    '''    
+    '''
     if (os.path.exists(g_setting_path)):
-        setting_file = open(g_setting_path, 'r') 
+        setting_file = open(g_setting_path, 'r')
         setting_json = json.load(setting_file)
-        if('prevAddr' in setting_json):
+        if ('prevAddr' in setting_json):
             return setting_json['prevAddr']
-        else:
-            return ''
     else:
         print g_setting_path
-        return ''
+
+    return ''
 
 def setPrevGlobalIPAddr(prevAddr):
-    ''' 
+    '''
     set prev gloval IP Addr value on setting file
     '''
     setting_json = {}
