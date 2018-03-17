@@ -11,12 +11,13 @@ import requests
 g_slack_webhook = ''
 g_setting_path = ''
 
-__version__ = "0.1.1.171224"
+__version__ = '0.1.2.180317'
+
+SERVICE_URL = 'http://ipcheck.ieserver.net/'
 
 def checkMain():
-    '''
-    main routine
-    '''
+    """ main routine
+    """
     global g_setting_path
     g_setting_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'checkgip.json')
 
@@ -39,9 +40,8 @@ def checkMain():
     return 0
 
 def loadSettings():
-    '''
-    load settings from json
-    '''
+    """ load settings from json
+    """
     global g_slack_webhook
     setting_json = {}
     if (os.path.exists(g_setting_path)):
@@ -51,9 +51,8 @@ def loadSettings():
             g_slack_webhook = setting_json['slackWebhook']
 
 def sendSlackMsg(global_ipaddr):
-    '''
-    send message to Slack
-    '''
+    """ send message to Slack
+    """
     msg = ''
     msg = getOSUname() + '\\nglobal IP Addr : ' + global_ipaddr
 
@@ -63,9 +62,8 @@ def sendSlackMsg(global_ipaddr):
     print r.text
 
 def getPrevGlobalIPAddr():
-    '''
-    get prre GlobalIPAddr
-    '''
+    """ get prre GlobalIPAddr
+    """
     if (os.path.exists(g_setting_path)):
         setting_file = open(g_setting_path, 'r')
         setting_json = json.load(setting_file)
@@ -77,9 +75,8 @@ def getPrevGlobalIPAddr():
     return ''
 
 def setPrevGlobalIPAddr(prevAddr):
-    '''
-    set prev gloval IP Addr value on setting file
-    '''
+    """ set prev gloval IP Addr value on setting file
+    """
     setting_json = {}
     setting_json['slackWebhook'] = g_slack_webhook
     setting_json['prevAddr'] = prevAddr
@@ -87,20 +84,17 @@ def setPrevGlobalIPAddr(prevAddr):
         json.dump(setting_json, setting_file)
 
 def getGlobalIPAddr():
-    '''
-    get global IP Addr
-    '''
-    url = 'http://ipcheck.ieserver.net/'
+    """ get global IP Addr
+    """
     try:
-        res = requests.get(url)
+        res = requests.get(SERVICE_URL)
     except Exception:
         return ''
     return str(res.text.rstrip('\n'))
 
 def getOSUname():
-    '''
-    get OS hostname
-    '''
+    """ get OS hostname
+    """
     return '%s' % socket.gethostname()
 
 if __name__ == '__main__':
