@@ -11,7 +11,7 @@ import requests
 g_slack_webhook = ''
 g_setting_path = ''
 
-__version__ = '0.1.2.180317'
+__version__ = '0.1.3.180318'
 
 SERVICE_URL = 'http://ipcheck.ieserver.net/'
 
@@ -96,6 +96,7 @@ def getOSUname():
     """ get OS hostname
     """
     return '%s' % socket.gethostname()
+
 
 if __name__ == '__main__':
     checkMain()
