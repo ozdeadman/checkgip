@@ -42,6 +42,8 @@ pip install -r requirements.txt
 ## Links
 * Slack - Incoming Webhooks
  https://api.slack.com/incoming-webhooks
+* Qiita - SlackとRaspberry PiでグローバルIPアドレスの変更を通知
+ https://qiita.com/thesaitama/items/7a3b0c7445dc276536fc
 
 ## Maintainer
 * Kazuhiro Komiya
